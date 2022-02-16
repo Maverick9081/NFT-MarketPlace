@@ -21,6 +21,7 @@ contract MarketPlace {
         uint id;
         address nftContractAddress;
         uint tokenId;
+        address owner;
         address payable seller;
         uint price;
         bool sold;
@@ -36,6 +37,7 @@ contract MarketPlace {
             nftId,
             nftContractAddress,
             tokenId,
+            msg.sender,
             payable(user),
             price,
             false
@@ -48,16 +50,34 @@ contract MarketPlace {
         
         uint tokenId = market[id].tokenId;
 
-        payement(id);
+        payement(user,id);
         NFT.transferFrom(address(this),user,tokenId);
+        market[id].owner = user;
+        market[id].sold = true;
+
     }
 
-    function payement(uint id) internal {
-        address user = msg.sender;
+    function payement(address user, uint id) internal {
         uint price = market[id].price;
+        address payable seller = market[id].seller;
+        uint denominator =1000;
+        uint fees = price/(25/denominator);
+        Token.transferFrom(user,admin,fees);
+        uint amountReceivedBySeller = price -fees;
+        Token.transferFrom(user,seller,amountReceivedBySeller);
+    }
 
-        Token.transferFrom(user,admin,price);
+    function onSaleNfts()public view returns(MarketNft [] memory){
+        
+        MarketNft[] memory items = new MarketNft[](nftId);
 
+        for(uint i=0; i<=nftId; i++){
+            if(market[i].sold == false){
+                MarketNft memory nft = market[i];
+                items[i] = nft;
+            }
+        }
+        return items;
     }
 
 }
