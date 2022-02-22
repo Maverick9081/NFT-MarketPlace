@@ -42,6 +42,7 @@ contract MarketPlace {
 
     //settinng royalty of NFT to an address
     //only creator can set NFT royalty
+    //if royalty fees are 2.5% then fee numerator shold be 250
     function setNftRoyalty (uint id,address royaltyReceiver,uint feeNumerator) public {
         require(market[id].creator == msg.sender);
         RoyaltyOwners[id].push(royaltyReceiver);
@@ -114,12 +115,12 @@ contract MarketPlace {
         }
         return items;
     }
-    
+
     function getBalance(address account) public view returns(uint){
         return balances[account];
     }
 
-
+    //Gets the total of royalty fees of all owners
     function getTotalRoyaltyfees(uint salePrice,uint tokenId)internal view returns(uint){
         uint feesNumerator =tokenRoyaltyInfo[tokenId].royaltyFraction;
         uint owners = RoyaltyOwners[tokenId].length;
