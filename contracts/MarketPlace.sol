@@ -8,14 +8,13 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 contract MarketPlace {
     uint private nftId; 
     IERC20 public Token;
-    IERC721 public NFT;
+    
     address payable admin;
     uint private basefee = 250;
 
-    constructor(address tokenAddress,address nftAddress) {
+    constructor(address tokenAddress) {
         Token = IERC20(tokenAddress);
         admin = payable(msg.sender);
-        NFT = IERC721(nftAddress);
     }
 
     struct RoyaltyInfo {
@@ -53,6 +52,7 @@ contract MarketPlace {
         return RoyaltyOwners[id]; 
     }
 
+    //User has to approve MarketPlace contract for the NFT
      function listNft(address nftContractAddress,uint tokenId, uint price) public {
         nftId++;
         address user = msg.sender;
@@ -67,7 +67,7 @@ contract MarketPlace {
             false
         );
     }
-
+    //Buyer has to approve ERC20 tokens to the marketPlace contract before buying
     function buyNft(uint id) public {
        
         require(market[id].sold ==false);
@@ -75,9 +75,10 @@ contract MarketPlace {
         address seller = market[id].seller;
         uint tokenId = market[id].tokenId;
         uint price = market[id].price;
+        address nftContractAddress = market[id].nftContractAddress;
 
         pay(price,user);
-        NFT.transferFrom(seller,user,tokenId);
+        IERC721(nftContractAddress).transferFrom(seller,user,tokenId);
         payTheSeller(price,id,seller);
         delegateBalancesToRoyalties(id,price);
         delegateBalanceToAdmin(price);
