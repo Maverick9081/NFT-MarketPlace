@@ -17,7 +17,7 @@ beforeEach(async function () {
 
 
     const MarketPlace = await ethers.getContractFactory("MarketPlace");
-    marketplace = await MarketPlace.deploy(tokenAddress,nftAddress);
+    marketplace = await MarketPlace.deploy(tokenAddress);
     marketPlaceAddress = marketplace.address;
   });
 
