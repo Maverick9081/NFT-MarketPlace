@@ -21,6 +21,6 @@ task("deploy-ERC721", "Deploys the ERC721 contract").setAction(async function (t
 
 task("deploy-marketPlace", "Deploys the ERC20 contract").setAction(async function (taskArguments, hre) {
     const marketContractFactory = await hre.ethers.getContractFactory("MarketPlace", getAccount());
-    const marketPlace = await marketContractFactory.deploy(getEnvVariable("TOKEN_ADDRESS"),getEnvVariable("NFT_CONTRACT_ADDRESS"));
+    const marketPlace = await marketContractFactory.deploy(getEnvVariable("TOKEN_ADDRESS"));
     console.log(`Contract deployed to address: ${marketPlace.address}`);
 });
